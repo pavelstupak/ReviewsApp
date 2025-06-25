@@ -35,7 +35,7 @@
 		216668722D48E89A009AAA76 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		21667B7F2D4A25B2009AAA76 /* RatingRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingRenderer.swift; sourceTree = "<group>"; };
 		2166A0F32D4A5B25009AAA76 /* ReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsView.swift; sourceTree = "<group>"; };
-		21B82DF92D4792300085DAA2 /* Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		21B82DF92D4792300085DAA2 /* ReviewsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReviewsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		21B82E232D47B0640085DAA2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		21B82E252D47B0640085DAA2 /* ReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCell.swift; sourceTree = "<group>"; };
 		21B82E292D47B0640085DAA2 /* ReviewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsViewController.swift; sourceTree = "<group>"; };
@@ -92,7 +92,7 @@
 		21B82DF02D4792300085DAA2 = {
 			isa = PBXGroup;
 			children = (
-				21B82E2C2D47B0640085DAA2 /* Test */,
+				21B82E2C2D47B0640085DAA2 /* ReviewsApp */,
 				21B82DFA2D4792300085DAA2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -100,7 +100,7 @@
 		21B82DFA2D4792300085DAA2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				21B82DF92D4792300085DAA2 /* Test.app */,
+				21B82DF92D4792300085DAA2 /* ReviewsApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -132,7 +132,7 @@
 			path = Screens;
 			sourceTree = "<group>";
 		};
-		21B82E2C2D47B0640085DAA2 /* Test */ = {
+		21B82E2C2D47B0640085DAA2 /* ReviewsApp */ = {
 			isa = PBXGroup;
 			children = (
 				21B82E2B2D47B0640085DAA2 /* AppDelegate.swift */,
@@ -143,7 +143,7 @@
 				21B82E222D47B0640085DAA2 /* Extensions */,
 				21B82E242D47B0640085DAA2 /* Resources */,
 			);
-			path = Test;
+			path = ReviewsApp;
 			sourceTree = "<group>";
 		};
 		21B82E372D47B1090085DAA2 /* Reviews */ = {
@@ -190,9 +190,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		21B82DF82D4792300085DAA2 /* Test */ = {
+		21B82DF82D4792300085DAA2 /* ReviewsApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 21B82E0C2D4792310085DAA2 /* Build configuration list for PBXNativeTarget "Test" */;
+			buildConfigurationList = 21B82E0C2D4792310085DAA2 /* Build configuration list for PBXNativeTarget "ReviewsApp" */;
 			buildPhases = (
 				21B82DF52D4792300085DAA2 /* Sources */,
 				21B82DF62D4792300085DAA2 /* Frameworks */,
@@ -202,11 +202,11 @@
 			);
 			dependencies = (
 			);
-			name = Test;
+			name = ReviewsApp;
 			packageProductDependencies = (
 			);
 			productName = Test;
-			productReference = 21B82DF92D4792300085DAA2 /* Test.app */;
+			productReference = 21B82DF92D4792300085DAA2 /* ReviewsApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -217,19 +217,20 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					21B82DF82D4792300085DAA2 = {
 						CreatedOnToolsVersion = 16.2;
 					};
 				};
 			};
-			buildConfigurationList = 21B82DF42D4792300085DAA2 /* Build configuration list for PBXProject "Test" */;
+			buildConfigurationList = 21B82DF42D4792300085DAA2 /* Build configuration list for PBXProject "ReviewsApp" */;
 			developmentRegion = ru;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				ru,
+				Base,
 			);
 			mainGroup = 21B82DF02D4792300085DAA2;
 			minimizedProjectReferenceProxies = 1;
@@ -238,7 +239,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				21B82DF82D4792300085DAA2 /* Test */,
+				21B82DF82D4792300085DAA2 /* ReviewsApp */,
 			);
 		};
 /* End PBXProject section */
@@ -302,7 +303,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pgc6240.Test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pavelstupak.ReviewsApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -332,7 +333,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pgc6240.Test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pavelstupak.ReviewsApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -349,6 +350,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -379,6 +381,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = BQKYKP8W6F;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -413,6 +416,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -443,6 +447,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = BQKYKP8W6F;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -468,7 +473,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		21B82DF42D4792300085DAA2 /* Build configuration list for PBXProject "Test" */ = {
+		21B82DF42D4792300085DAA2 /* Build configuration list for PBXProject "ReviewsApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				21B82E0F2D4792310085DAA2 /* Debug */,
@@ -477,7 +482,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		21B82E0C2D4792310085DAA2 /* Build configuration list for PBXNativeTarget "Test" */ = {
+		21B82E0C2D4792310085DAA2 /* Build configuration list for PBXNativeTarget "ReviewsApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				21B82E0D2D4792310085DAA2 /* Debug */,
