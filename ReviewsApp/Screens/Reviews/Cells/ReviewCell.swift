@@ -63,6 +63,7 @@ final class ReviewCell: UITableViewCell {
     fileprivate let reviewTextLabel = UILabel()
     fileprivate let createdLabel = UILabel()
     fileprivate let showMoreButton = UIButton()
+	fileprivate let avatarImage = UIImageView()
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -79,6 +80,7 @@ final class ReviewCell: UITableViewCell {
         reviewTextLabel.frame = layout.reviewTextLabelFrame
         createdLabel.frame = layout.createdLabelFrame
         showMoreButton.frame = layout.showMoreButtonFrame
+		avatarImage.frame = layout.avatarImageFrame
     }
 
 }
@@ -91,6 +93,7 @@ private extension ReviewCell {
         setupReviewTextLabel()
         setupCreatedLabel()
         setupShowMoreButton()
+		setupAvatarImage()
     }
 
     func setupReviewTextLabel() {
@@ -108,6 +111,13 @@ private extension ReviewCell {
         showMoreButton.setAttributedTitle(Config.showMoreText, for: .normal)
     }
 
+	func setupAvatarImage() {
+		contentView.addSubview(avatarImage)
+		avatarImage.image = UIImage(named: "avatar")
+		avatarImage.layer.cornerRadius = Layout.avatarCornerRadius
+		avatarImage.contentMode = .scaleAspectFill
+		avatarImage.clipsToBounds = true
+	}
 }
 
 // MARK: - Layout
@@ -130,6 +140,7 @@ private final class ReviewCellLayout {
     private(set) var reviewTextLabelFrame = CGRect.zero
     private(set) var showMoreButtonFrame = CGRect.zero
     private(set) var createdLabelFrame = CGRect.zero
+	private(set) var avatarImageFrame = CGRect.zero
 
     // MARK: - Отступы
 
@@ -157,10 +168,19 @@ private final class ReviewCellLayout {
 
     /// Возвращает высоту ячейку с данной конфигурацией `config` и ограничением по ширине `maxWidth`.
     func height(config: Config, maxWidth: CGFloat) -> CGFloat {
-        let width = maxWidth - insets.left - insets.right
-
+		//var maxX = insets.left
+		var maxX = insets.left
         var maxY = insets.top
         var showShowMoreButton = false
+
+		avatarImageFrame = CGRect(
+			origin: CGPoint(x: maxX, y: maxY),
+			size: Layout.avatarSize
+		)
+
+		maxX = avatarImageFrame.maxX + avatarToUsernameSpacing
+
+		let width = maxWidth - insets.left - insets.right - avatarImageFrame.width - avatarToUsernameSpacing
 
         if !config.reviewText.isEmpty() {
             // Высота текста с текущим ограничением по количеству строк.
@@ -171,7 +191,7 @@ private final class ReviewCellLayout {
             showShowMoreButton = config.maxLines != .zero && actualTextHeight > currentTextHeight
 
             reviewTextLabelFrame = CGRect(
-                origin: CGPoint(x: insets.left, y: maxY),
+                origin: CGPoint(x: maxX, y: maxY),
                 size: config.reviewText.boundingRect(width: width, height: currentTextHeight).size
             )
             maxY = reviewTextLabelFrame.maxY + reviewTextToCreatedSpacing
@@ -179,7 +199,7 @@ private final class ReviewCellLayout {
 
         if showShowMoreButton {
             showMoreButtonFrame = CGRect(
-                origin: CGPoint(x: insets.left, y: maxY),
+                origin: CGPoint(x: maxX, y: maxY),
                 size: Self.showMoreButtonSize
             )
             maxY = showMoreButtonFrame.maxY + showMoreToCreatedSpacing
@@ -188,11 +208,11 @@ private final class ReviewCellLayout {
         }
 
         createdLabelFrame = CGRect(
-            origin: CGPoint(x: insets.left, y: maxY),
+            origin: CGPoint(x: maxX, y: maxY),
             size: config.created.boundingRect(width: width).size
         )
 
-        return createdLabelFrame.maxY + insets.bottom
+		return avatarImageFrame.maxY > createdLabelFrame.maxY ? avatarImageFrame.maxY + insets.bottom : createdLabelFrame.maxY + insets.bottom
     }
 
 }
