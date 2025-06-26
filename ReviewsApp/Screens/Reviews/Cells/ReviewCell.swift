@@ -10,6 +10,8 @@ struct ReviewCellConfig {
     let id = UUID()
 	/// Имя пользователя.
 	let username: NSAttributedString
+	/// Рейтинг.
+	let rating: Int
     /// Текст отзыва.
     let reviewText: NSAttributedString
     /// Максимальное отображаемое количество строк текста. По умолчанию 3.
@@ -32,10 +34,10 @@ extension ReviewCellConfig: TableCellConfig {
     /// Вызывается из `cellForRowAt:` у `dataSource` таблицы.
     func update(cell: UITableViewCell) {
         guard let cell = cell as? ReviewCell else { return }
+		cell.usernameLabel.attributedText = username
         cell.reviewTextLabel.attributedText = reviewText
         cell.reviewTextLabel.numberOfLines = maxLines
         cell.createdLabel.attributedText = created
-		cell.usernameLabel.attributedText = username
         cell.config = self
     }
 
@@ -63,11 +65,12 @@ final class ReviewCell: UITableViewCell {
 
     fileprivate var config: Config?
 
+	fileprivate let avatarImage = UIImageView()
 	fileprivate let usernameLabel = UILabel()
+	fileprivate var ratingImage = UIImageView()
     fileprivate let reviewTextLabel = UILabel()
     fileprivate let createdLabel = UILabel()
     fileprivate let showMoreButton = UIButton()
-	fileprivate let avatarImage = UIImageView()
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -80,12 +83,15 @@ final class ReviewCell: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        guard let layout = config?.layout else { return }
+		guard let config else { return }
+		let layout = config.layout
+		avatarImage.frame = layout.avatarImageFrame
 		usernameLabel.frame = layout.usernameLabelFrame
+		ratingImage.frame = layout.ratingImageFrame
+		ratingImage.image = RatingRenderer().ratingImage(config.rating)
         reviewTextLabel.frame = layout.reviewTextLabelFrame
         createdLabel.frame = layout.createdLabelFrame
         showMoreButton.frame = layout.showMoreButtonFrame
-		avatarImage.frame = layout.avatarImageFrame
     }
 
 }
@@ -97,6 +103,7 @@ private extension ReviewCell {
     func setupCell() {
 		setupAvatarImage()
 		setupUsernameLabel()
+		setupRatingImage()
         setupReviewTextLabel()
         setupCreatedLabel()
         setupShowMoreButton()
@@ -108,6 +115,10 @@ private extension ReviewCell {
 		avatarImage.layer.cornerRadius = Layout.avatarCornerRadius
 		avatarImage.contentMode = .scaleAspectFill
 		avatarImage.clipsToBounds = true
+	}
+
+	func setupRatingImage() {
+		contentView.addSubview(ratingImage)
 	}
 
 	func setupUsernameLabel() {
@@ -140,6 +151,7 @@ private final class ReviewCellLayout {
     // MARK: - Размеры
 
     fileprivate static let avatarSize = CGSize(width: 36.0, height: 36.0)
+	fileprivate static let ratingImageSize = CGSize(width: 84.0, height: 16.0)
     fileprivate static let avatarCornerRadius = 18.0
     fileprivate static let photoCornerRadius = 8.0
 
@@ -150,6 +162,7 @@ private final class ReviewCellLayout {
 
 	private(set) var avatarImageFrame = CGRect.zero
 	private(set) var usernameLabelFrame = CGRect.zero
+	private(set) var ratingImageFrame = CGRect.zero
     private(set) var reviewTextLabelFrame = CGRect.zero
     private(set) var showMoreButtonFrame = CGRect.zero
     private(set) var createdLabelFrame = CGRect.zero
@@ -202,6 +215,13 @@ private final class ReviewCellLayout {
 		)
 
 		maxY = usernameLabelFrame.maxY + usernameToRatingSpacing
+
+		ratingImageFrame = CGRect(
+			origin: CGPoint(x: maxX, y: maxY),
+			size: Layout.ratingImageSize
+		)
+
+		maxY = ratingImageFrame.maxY + ratingToTextSpacing
 
         if !config.reviewText.isEmpty() {
             // Высота текста с текущим ограничением по количеству строк.

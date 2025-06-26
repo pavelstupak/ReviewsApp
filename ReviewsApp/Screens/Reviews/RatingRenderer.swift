@@ -38,6 +38,7 @@ final class RatingRenderer {
     private let config: RatingRendererConfig
     private var images: [Int: UIImage]
     private let imageRenderer: UIGraphicsImageRenderer
+	private var didLogInvalidRating = false
 
     init(
         config: RatingRendererConfig,
@@ -63,9 +64,13 @@ extension RatingRenderer {
         self.init(config: config, images: [:], imageRenderer: UIGraphicsImageRenderer(size: size))
     }
 
-    func ratingImage(_ rating: Int) -> UIImage {
-        images[rating] ?? drawRatingImageAndCache(rating)
-    }
+	func ratingImage(_ rating: Int) -> UIImage {
+		guard config.ratingRange.contains(rating) else {
+			logRatingOutOfBounds(rating)
+			return placeholderImage()
+		}
+		return images[rating] ?? drawRatingImageAndCache(rating)
+	}
 
 }
 
@@ -91,5 +96,16 @@ private extension RatingRenderer {
         }
         return renderedImage
     }
+
+	private func placeholderImage() -> UIImage {
+		// Все звёзды faded (серые)
+		return drawRatingImage(config.ratingRange.lowerBound - 1)
+	}
+
+	private func logRatingOutOfBounds(_ rating: Int) {
+		guard !didLogInvalidRating else { return }
+		didLogInvalidRating = true
+		Logger.shared.warn("Received out-of-bounds rating: \(rating). Expected: \(config.ratingRange)")
+	}
 
 }
