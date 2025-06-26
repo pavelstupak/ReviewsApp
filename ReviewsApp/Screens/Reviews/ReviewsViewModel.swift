@@ -21,6 +21,8 @@ final class ReviewsViewModel: NSObject {
         self.reviewsProvider = reviewsProvider
         self.ratingRenderer = ratingRenderer
         self.decoder = decoder
+
+		self.decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
 
 }
@@ -79,9 +81,13 @@ private extension ReviewsViewModel {
     typealias ReviewItem = ReviewCellConfig
 
     func makeReviewItem(_ review: Review) -> ReviewItem {
+		let usernameString = "\(review.firstName) \(review.lastName)"
+		let username = usernameString.attributed(font: .username)
         let reviewText = review.text.attributed(font: .text)
         let created = review.created.attributed(font: .created, color: .created)
         let item = ReviewItem(
+			username: username,
+			rating: review.rating,
             reviewText: reviewText,
             created: created,
             onTapShowMore: showMoreReview
