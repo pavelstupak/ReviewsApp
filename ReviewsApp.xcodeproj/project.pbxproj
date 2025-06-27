@@ -28,6 +28,7 @@
 		21ED1F622D69CBCD0012D6F6 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21ED1F612D69CBCD0012D6F6 /* RootView.swift */; };
 		21ED1F652D69D0340012D6F6 /* ReviewsScreenFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21ED1F642D69D0340012D6F6 /* ReviewsScreenFactory.swift */; };
 		E9A8C8F52E0D68D2009AB932 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A8C8F42E0D68BC009AB932 /* Logger.swift */; };
+		E9A8C8F72E0E9DE9009AB932 /* ReviewsCountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A8C8F62E0E9DE4009AB932 /* ReviewsCountCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,7 @@
 		21ED1F612D69CBCD0012D6F6 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		21ED1F642D69D0340012D6F6 /* ReviewsScreenFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsScreenFactory.swift; sourceTree = "<group>"; };
 		E9A8C8F42E0D68BC009AB932 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		E9A8C8F62E0E9DE4009AB932 /* ReviewsCountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsCountCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 		216668752D48F39E009AAA76 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				E9A8C8F62E0E9DE4009AB932 /* ReviewsCountCell.swift */,
 				21B82E252D47B0640085DAA2 /* ReviewCell.swift */,
 			);
 			path = Cells;
@@ -275,6 +278,7 @@
 				E9A8C8F52E0D68D2009AB932 /* Logger.swift in Sources */,
 				21B82E392D47B1320085DAA2 /* Review.swift in Sources */,
 				21B8416D2D47C0E20085DAA2 /* ReviewsViewModelState.swift in Sources */,
+				E9A8C8F72E0E9DE9009AB932 /* ReviewsCountCell.swift in Sources */,
 				21B82E2E2D47B0640085DAA2 /* ReviewCell.swift in Sources */,
 				21ED1F622D69CBCD0012D6F6 /* RootView.swift in Sources */,
 				21667B802D4A25B2009AAA76 /* RatingRenderer.swift in Sources */,
