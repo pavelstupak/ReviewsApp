@@ -54,9 +54,14 @@ private extension ReviewsViewModel {
             state.items += reviews.items.map(makeReviewItem)
             state.offset += state.limit
             state.shouldLoad = state.offset < reviews.count
+
+			if state.offset >= reviews.count {
+				state.items.append(makeReviewsCountItem(totalCount: reviews.count))
+			}
         } catch {
             state.shouldLoad = true
         }
+
         onStateChange?(state)
     }
 
@@ -94,6 +99,17 @@ private extension ReviewsViewModel {
         )
         return item
     }
+
+}
+
+private extension ReviewsViewModel {
+
+	/// Метод создания ReviewsCountCellConfig для отображения количества отзывов.
+	func makeReviewsCountItem(totalCount: Int) -> ReviewsCountCellConfig {
+		let countString = "\(totalCount) отзывов"
+		let countText = countString.attributed(font: .reviewCount, color: .reviewCount)
+		return ReviewsCountCellConfig(countText: countText)
+	}
 
 }
 
