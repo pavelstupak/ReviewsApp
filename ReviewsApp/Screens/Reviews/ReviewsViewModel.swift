@@ -95,8 +95,7 @@ private extension ReviewsViewModel {
             created: created,
 			onTapShowMore: { [weak self] id in
 				self?.showMoreReview(with: id)
-			},
-			ratingRenderer: ratingRenderer
+			}
 		)
         return item
     }
