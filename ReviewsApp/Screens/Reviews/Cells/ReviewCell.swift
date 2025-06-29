@@ -84,6 +84,8 @@ private extension ReviewCellConfig {
 
 final class ReviewCell: UITableViewCell {
 
+	static let avatarPlaceholder = UIImage(named: "avatar")
+
     fileprivate var config: Config?
 	fileprivate var currentLayout: ReviewCellLayout?
 
@@ -131,7 +133,7 @@ private extension ReviewCell {
 
 	func setupAvatarImage() {
 		contentView.addSubview(avatarImage)
-		avatarImage.image = UIImage(named: "avatar")
+		avatarImage.image = Self.avatarPlaceholder
 		avatarImage.layer.cornerRadius = Layout.avatarCornerRadius
 		avatarImage.contentMode = .scaleAspectFill
 		avatarImage.clipsToBounds = true
