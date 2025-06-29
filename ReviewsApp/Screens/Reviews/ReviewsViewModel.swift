@@ -21,7 +21,6 @@ final class ReviewsViewModel: NSObject {
         self.reviewsProvider = reviewsProvider
         self.ratingRenderer = ratingRenderer
         self.decoder = decoder
-
 		self.decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
 
@@ -97,7 +96,8 @@ private extension ReviewsViewModel {
             created: created,
 			onTapShowMore: { [weak self] id in
 				self?.showMoreReview(with: id)
-			}
+			},
+			ratingRenderer: ratingRenderer
 		)
         return item
     }
