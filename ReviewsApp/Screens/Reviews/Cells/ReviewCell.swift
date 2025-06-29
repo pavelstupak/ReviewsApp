@@ -22,7 +22,25 @@ struct ReviewCellConfig {
     let onTapShowMore: (UUID) -> Void
 
     /// Объект, хранящий посчитанные фреймы для ячейки отзыва.
-    fileprivate let layout = ReviewCellLayout()
+	fileprivate let layout: ReviewCellLayout
+
+	init(
+		username: NSAttributedString,
+		rating: Int,
+		reviewText: NSAttributedString,
+		created: NSAttributedString,
+		maxLines: Int = 3,
+		onTapShowMore: @escaping (UUID) -> Void,
+		ratingRenderer: RatingRenderer
+	) {
+		self.username = username
+		self.rating = rating
+		self.reviewText = reviewText
+		self.created = created
+		self.maxLines = maxLines
+		self.onTapShowMore = onTapShowMore
+		self.layout = ReviewCellLayout(ratingRenderer: ratingRenderer)
+	}
 
 }
 
@@ -38,6 +56,7 @@ extension ReviewCellConfig: TableCellConfig {
         cell.reviewTextLabel.attributedText = reviewText
         cell.reviewTextLabel.numberOfLines = maxLines
         cell.createdLabel.attributedText = created
+		cell.ratingImage.image = layout.ratingImage(rating: rating)
         cell.config = self
     }
 
@@ -88,7 +107,6 @@ final class ReviewCell: UITableViewCell {
 		avatarImage.frame = layout.avatarImageFrame
 		usernameLabel.frame = layout.usernameLabelFrame
 		ratingImage.frame = layout.ratingImageFrame
-		ratingImage.image = RatingRenderer().ratingImage(config.rating)
         reviewTextLabel.frame = layout.reviewTextLabelFrame
         createdLabel.frame = layout.createdLabelFrame
         showMoreButton.frame = layout.showMoreButtonFrame
@@ -148,6 +166,8 @@ private extension ReviewCell {
 /// После расчётов возвращается актуальная высота ячейки.
 private final class ReviewCellLayout {
 
+	private let ratingRenderer: RatingRenderer
+
     // MARK: - Размеры
 
     fileprivate static let avatarSize = CGSize(width: 36.0, height: 36.0)
@@ -188,6 +208,17 @@ private final class ReviewCellLayout {
     private let reviewTextToCreatedSpacing = 6.0
     /// Вертикальный отступ от кнопки "Показать полностью..." до времени создания отзыва.
     private let showMoreToCreatedSpacing = 6.0
+
+	// MARK: - Init
+
+	init(ratingRenderer: RatingRenderer) {
+		self.ratingRenderer = ratingRenderer
+	}
+
+	// MARK: - Получение изображения рейтинга
+	func ratingImage(rating: Int) -> UIImage {
+		return ratingRenderer.ratingImage(rating)
+	}
 
     // MARK: - Расчёт фреймов и высоты ячейки
 
