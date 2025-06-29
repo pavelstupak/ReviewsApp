@@ -21,17 +21,13 @@ struct ReviewCellConfig {
     /// Замыкание, вызываемое при нажатии на кнопку "Показать полностью...".
     let onTapShowMore: (UUID) -> Void
 
-    /// Объект, хранящий посчитанные фреймы для ячейки отзыва.
-	fileprivate let layout: ReviewCellLayout
-
 	init(
 		username: NSAttributedString,
 		rating: Int,
 		reviewText: NSAttributedString,
 		created: NSAttributedString,
 		maxLines: Int = 3,
-		onTapShowMore: @escaping (UUID) -> Void,
-		ratingRenderer: RatingRenderer
+		onTapShowMore: @escaping (UUID) -> Void
 	) {
 		self.username = username
 		self.rating = rating
@@ -39,7 +35,6 @@ struct ReviewCellConfig {
 		self.created = created
 		self.maxLines = maxLines
 		self.onTapShowMore = onTapShowMore
-		self.layout = ReviewCellLayout(ratingRenderer: ratingRenderer)
 	}
 
 }
@@ -52,18 +47,25 @@ extension ReviewCellConfig: TableCellConfig {
     /// Вызывается из `cellForRowAt:` у `dataSource` таблицы.
     func update(cell: UITableViewCell) {
         guard let cell = cell as? ReviewCell else { return }
+
 		cell.usernameLabel.attributedText = username
         cell.reviewTextLabel.attributedText = reviewText
         cell.reviewTextLabel.numberOfLines = maxLines
         cell.createdLabel.attributedText = created
-		cell.ratingImage.image = layout.ratingImage(rating: rating)
-        cell.config = self
+
+		let layout = ReviewCellLayout(config: self, maxWidth: cell.bounds.width)
+		cell.currentLayout = layout
+
+		cell.ratingImage.image = RatingRenderer.shared.ratingImage(rating)
+		cell.config = self
     }
 
     /// Метод, возвращаюший высоту ячейки с данным ограничением по размеру.
     /// Вызывается из `heightForRowAt:` делегата таблицы.
+	// TODO: Оптимизировать создание layout для перфоманса.
     func height(with size: CGSize) -> CGFloat {
-        layout.height(config: self, maxWidth: size.width)
+		let layout = ReviewCellLayout(config: self, maxWidth: size.width)
+		return layout.height
     }
 
 }
@@ -83,6 +85,7 @@ private extension ReviewCellConfig {
 final class ReviewCell: UITableViewCell {
 
     fileprivate var config: Config?
+	fileprivate var currentLayout: ReviewCellLayout?
 
 	fileprivate let avatarImage = UIImageView()
 	fileprivate let usernameLabel = UILabel()
@@ -102,8 +105,7 @@ final class ReviewCell: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-		guard let config else { return }
-		let layout = config.layout
+		guard let layout = currentLayout else { return }
 		avatarImage.frame = layout.avatarImageFrame
 		usernameLabel.frame = layout.usernameLabelFrame
 		ratingImage.frame = layout.ratingImageFrame
@@ -166,7 +168,8 @@ private extension ReviewCell {
 /// После расчётов возвращается актуальная высота ячейки.
 private final class ReviewCellLayout {
 
-	private let ratingRenderer: RatingRenderer
+	// Высота ячейки.
+	private(set) var height: CGFloat = 0
 
     // MARK: - Размеры
 
@@ -210,14 +213,9 @@ private final class ReviewCellLayout {
     private let showMoreToCreatedSpacing = 6.0
 
 	// MARK: - Init
-
-	init(ratingRenderer: RatingRenderer) {
-		self.ratingRenderer = ratingRenderer
-	}
-
-	// MARK: - Получение изображения рейтинга
-	func ratingImage(rating: Int) -> UIImage {
-		return ratingRenderer.ratingImage(rating)
+	convenience init(config: ReviewCellConfig, maxWidth: CGFloat) {
+		self.init()
+		_ = self.height(config: config, maxWidth: maxWidth)
 	}
 
     // MARK: - Расчёт фреймов и высоты ячейки
@@ -284,7 +282,8 @@ private final class ReviewCellLayout {
             size: config.created.boundingRect(width: width).size
         )
 
-		return avatarImageFrame.maxY > createdLabelFrame.maxY ? avatarImageFrame.maxY + insets.bottom : createdLabelFrame.maxY + insets.bottom
+		self.height = max(avatarImageFrame.maxY, createdLabelFrame.maxY) + insets.bottom
+		return self.height
     }
 
 }
