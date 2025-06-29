@@ -39,7 +39,7 @@ struct ReviewCellConfig {
 		self.created = created
 		self.maxLines = maxLines
 		self.onTapShowMore = onTapShowMore
-		self.layout = ReviewCellLayout(ratingRenderer: ratingRenderer)
+		self.layout = ReviewCellLayout()
 	}
 
 }
@@ -211,8 +211,8 @@ private final class ReviewCellLayout {
 
 	// MARK: - Init
 
-	init(ratingRenderer: RatingRenderer) {
-		self.ratingRenderer = ratingRenderer
+	init() {
+		self.ratingRenderer = RatingRenderer.shared
 	}
 
 	// MARK: - Получение изображения рейтинга

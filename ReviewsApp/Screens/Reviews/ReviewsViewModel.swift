@@ -11,16 +11,15 @@ final class ReviewsViewModel: NSObject {
     private let ratingRenderer: RatingRenderer
     private let decoder: JSONDecoder
 
-    init(
-        state: State = State(),
-        reviewsProvider: ReviewsProvider = ReviewsProvider(),
-        ratingRenderer: RatingRenderer = RatingRenderer(),
-        decoder: JSONDecoder = JSONDecoder()
-    ) {
-        self.state = state
-        self.reviewsProvider = reviewsProvider
-        self.ratingRenderer = ratingRenderer
-        self.decoder = decoder
+	init(
+		state: State = State(),
+		reviewsProvider: ReviewsProvider = ReviewsProvider(),
+		decoder: JSONDecoder = JSONDecoder()
+	) {
+		self.state = state
+		self.reviewsProvider = reviewsProvider
+		self.ratingRenderer = RatingRenderer.shared
+		self.decoder = decoder
 		self.decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
 

@@ -35,6 +35,9 @@ extension RatingRendererConfig {
 /// Класс рисует изображение рейтинга (звёзды) и кэширует его.
 final class RatingRenderer {
 
+	// Общий экземпляр Singleton
+	static let shared = RatingRenderer()
+
     private let config: RatingRendererConfig
     private var images: [Int: UIImage]
     private let imageRenderer: UIGraphicsImageRenderer
