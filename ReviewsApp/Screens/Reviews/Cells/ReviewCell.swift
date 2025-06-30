@@ -99,8 +99,10 @@ extension ReviewCellConfig: TableCellConfig {
 						if cell.config?.id == self.id {
 							cell.avatarImage.image = image
 						}
+						cell.avatarLoadTask = nil
 					}
 				}
+				cell.avatarLoadTask = task
 				task.resume()
 			}
 		}
@@ -135,6 +137,7 @@ final class ReviewCell: UITableViewCell {
 
     fileprivate var config: Config?
 	fileprivate var currentLayout: ReviewCellLayout?
+	fileprivate var avatarLoadTask: URLSessionDataTask?
 
 	fileprivate let avatarImage = UIImageView()
 	fileprivate let usernameLabel = UILabel()
@@ -162,6 +165,17 @@ final class ReviewCell: UITableViewCell {
         createdLabel.frame = layout.createdLabelFrame
         showMoreButton.frame = layout.showMoreButtonFrame
     }
+
+	override func prepareForReuse() {
+		super.prepareForReuse()
+
+		// Отменяем текущую загрузку
+		avatarLoadTask?.cancel()
+		avatarLoadTask = nil
+
+		// Сбрасываем картинку на плейсхолдер
+		avatarImage.image = Self.avatarPlaceholder
+	}
 
 }
 
