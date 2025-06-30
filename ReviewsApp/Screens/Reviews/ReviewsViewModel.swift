@@ -45,23 +45,31 @@ extension ReviewsViewModel {
 private extension ReviewsViewModel {
 
     /// Метод обработки получения отзывов.
-    func gotReviews(_ result: ReviewsProvider.GetReviewsResult) {
-        do {
-            let data = try result.get()
-            let reviews = try decoder.decode(Reviews.self, from: data)
-            state.items += reviews.items.map(makeReviewItem)
-            state.offset += state.limit
-            state.shouldLoad = state.offset < reviews.count
+	func gotReviews(_ result: ReviewsProvider.GetReviewsResult) {
 
-			if state.offset >= reviews.count {
-				state.items.append(makeReviewsCountItem(totalCount: reviews.count))
+		DispatchQueue.global(qos: .userInitiated).async {
+			do {
+				let data = try result.get()
+				let reviews = try self.decoder.decode(Reviews.self, from: data)
+				self.state.items += reviews.items.map(self.makeReviewItem)
+
+				DispatchQueue.main.async {
+					self.state.offset += self.state.limit
+					self.state.shouldLoad = self.state.offset < reviews.count
+
+					if self.state.offset >= reviews.count {
+						self.state.items.append(self.makeReviewsCountItem(totalCount: reviews.count))
+					}
+					self.onStateChange?(self.state)
+				}
+			} catch {
+				DispatchQueue.main.async {
+					self.state.shouldLoad = true
+					self.onStateChange?(self.state)
+				}
 			}
-        } catch {
-            state.shouldLoad = true
-        }
-
-        onStateChange?(state)
-    }
+		}
+	}
 
     /// Метод, вызываемый при нажатии на кнопку "Показать полностью...".
     /// Снимает ограничение на количество строк текста отзыва (раскрывает текст).
