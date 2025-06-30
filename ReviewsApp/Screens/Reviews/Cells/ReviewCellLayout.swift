@@ -4,7 +4,7 @@ import UIKit
 
 /// Класс, в котором происходит расчёт фреймов для сабвью ячейки отзыва.
 /// После расчётов возвращается актуальная высота ячейки.
-private final class ReviewCellLayout {
+final class ReviewCellLayout {
 
 	// Высота ячейки.
 	private(set) var height: CGFloat = 0
@@ -17,7 +17,7 @@ private final class ReviewCellLayout {
 	static let photoCornerRadius = 8.0
 
 	static let photoSize = CGSize(width: 55.0, height: 66.0)
-	static let showMoreButtonSize = Config.showMoreText.size()
+	static let showMoreButtonSize = showMoreText.size()
 
 	// MARK: - Отступы
 
@@ -41,78 +41,11 @@ private final class ReviewCellLayout {
 	/// Вертикальный отступ от кнопки "Показать полностью..." до времени создания отзыва.
 	static let showMoreToCreatedSpacing = 6.0
 
-	// MARK: - Init
-	convenience init(config: ReviewCellConfig, maxWidth: CGFloat) {
-		self.init()
-		_ = self.height(config: config, maxWidth: maxWidth)
-	}
 
-	// MARK: - Расчёт фреймов и высоты ячейки
+	// MARK: - Строки
 
-	/// Возвращает высоту ячейку с данной конфигурацией `config` и ограничением по ширине `maxWidth`.
-	func height(config: Config, maxWidth: CGFloat) -> CGFloat {
-		var maxX = insets.left
-		var maxY = insets.top
-		var showShowMoreButton = false
-
-		avatarImageFrame = CGRect(
-			origin: CGPoint(x: maxX, y: maxY),
-			size: Layout.avatarSize
-		)
-
-		maxX = avatarImageFrame.maxX + avatarToUsernameSpacing
-
-		let width = maxWidth - insets.left - insets.right - avatarImageFrame.width - avatarToUsernameSpacing
-
-		// Высота имени пользователя.
-		let usernameHeight = config.username.boundingRect(width: width).size.height
-
-		usernameLabelFrame = CGRect(
-			origin: CGPoint(x: maxX, y: maxY),
-			size: config.username.boundingRect(width: width, height: usernameHeight).size
-		)
-
-		maxY = usernameLabelFrame.maxY + usernameToRatingSpacing
-
-		ratingImageFrame = CGRect(
-			origin: CGPoint(x: maxX, y: maxY),
-			size: Layout.ratingImageSize
-		)
-
-		maxY = ratingImageFrame.maxY + ratingToTextSpacing
-
-		if !config.reviewText.isEmpty() {
-			// Высота текста с текущим ограничением по количеству строк.
-			let currentTextHeight = (config.reviewText.font()?.lineHeight ?? .zero) * CGFloat(config.maxLines)
-			// Максимально возможная высота текста, если бы ограничения не было.
-			let actualTextHeight = config.reviewText.boundingRect(width: width).size.height
-			// Показываем кнопку "Показать полностью...", если максимально возможная высота текста больше текущей.
-			showShowMoreButton = config.maxLines != .zero && actualTextHeight > currentTextHeight
-
-			reviewTextLabelFrame = CGRect(
-				origin: CGPoint(x: maxX, y: maxY),
-				size: config.reviewText.boundingRect(width: width, height: currentTextHeight).size
-			)
-			maxY = reviewTextLabelFrame.maxY + reviewTextToCreatedSpacing
-		}
-
-		if showShowMoreButton {
-			showMoreButtonFrame = CGRect(
-				origin: CGPoint(x: maxX, y: maxY),
-				size: Self.showMoreButtonSize
-			)
-			maxY = showMoreButtonFrame.maxY + showMoreToCreatedSpacing
-		} else {
-			showMoreButtonFrame = .zero
-		}
-
-		createdLabelFrame = CGRect(
-			origin: CGPoint(x: maxX, y: maxY),
-			size: config.created.boundingRect(width: width).size
-		)
-
-		self.height = max(avatarImageFrame.maxY, createdLabelFrame.maxY) + insets.bottom
-		return self.height
-	}
+	/// Текст кнопки "Показать полностью...".
+	static let showMoreText = "Показать полностью..."
+		.attributed(font: .showMore, color: .showMore)
 
 }

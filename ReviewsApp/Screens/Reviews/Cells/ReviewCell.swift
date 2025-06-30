@@ -50,33 +50,27 @@ extension ReviewCellConfig: TableCellConfig {
 
 		cell.usernameLabel.attributedText = username
         cell.reviewTextLabel.attributedText = reviewText
-        cell.reviewTextLabel.numberOfLines = maxLines
         cell.createdLabel.attributedText = created
-
-		let layout = ReviewCellLayout(config: self, maxWidth: cell.bounds.width)
-		cell.currentLayout = layout
-
 		cell.ratingImage.image = RatingRenderer.shared.ratingImage(rating)
+		cell.reviewTextLabel.numberOfLines = maxLines
 		cell.config = self
+
+		let maxTextWidth = cell.contentView.bounds.width - ReviewCellLayout.insets.left - ReviewCellLayout.insets.right - ReviewCellLayout.avatarSize.width - ReviewCellLayout.avatarToUsernameSpacing
+		let actualTextHeight = reviewText.actualHeight(for: maxTextWidth)
+
+		let lineHeight = reviewText.font()?.lineHeight ?? .zero
+		let currentTextHeight = lineHeight * CGFloat(maxLines)
+		let hasText = !reviewText.isEmpty()
+		cell.showMoreButton.isHidden = !hasText || maxLines == .zero || actualTextHeight <= currentTextHeight
+
+		if cell.showMoreButton.isHidden {
+			cell.createdLabelTopToShowMoreConstraint.isActive = false
+			cell.createdLabelTopToReviewTextConstraint.isActive = true
+		} else {
+			cell.createdLabelTopToReviewTextConstraint.isActive = false
+			cell.createdLabelTopToShowMoreConstraint.isActive = true
+		}
     }
-
-    /// Метод, возвращаюший высоту ячейки с данным ограничением по размеру.
-    /// Вызывается из `heightForRowAt:` делегата таблицы.
-	// TODO: Оптимизировать создание layout для перфоманса.
-    func height(with size: CGSize) -> CGFloat {
-		let layout = ReviewCellLayout(config: self, maxWidth: size.width)
-		return layout.height
-    }
-
-}
-
-// MARK: - Private
-
-private extension ReviewCellConfig {
-
-    /// Текст кнопки "Показать полностью...".
-    static let showMoreText = "Показать полностью..."
-        .attributed(font: .showMore, color: .showMore)
 
 }
 
@@ -95,6 +89,9 @@ final class ReviewCell: UITableViewCell {
     fileprivate let reviewTextLabel = UILabel()
     fileprivate let createdLabel = UILabel()
     fileprivate let showMoreButton = UIButton()
+
+	fileprivate var createdLabelTopToShowMoreConstraint: NSLayoutConstraint!
+	fileprivate var createdLabelTopToReviewTextConstraint: NSLayoutConstraint!
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -116,8 +113,8 @@ private extension ReviewCell {
 		setupUsernameLabel()
 		setupRatingImage()
         setupReviewTextLabel()
+		setupShowMoreButton()
         setupCreatedLabel()
-        setupShowMoreButton()
     }
 
 	func setupAvatarImage() {
@@ -127,34 +124,95 @@ private extension ReviewCell {
 		avatarImage.layer.cornerRadius = ReviewCellLayout.avatarCornerRadius
 		avatarImage.contentMode = .scaleAspectFill
 		avatarImage.clipsToBounds = true
-	}
 
-	func setupRatingImage() {
-		contentView.addSubview(ratingImage)
-		ratingImage.translatesAutoresizingMaskIntoConstraints = false
+		NSLayoutConstraint.activate([
+			avatarImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ReviewCellLayout.insets.left),
+			avatarImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ReviewCellLayout.insets.top),
+			avatarImage.widthAnchor.constraint(equalToConstant: ReviewCellLayout.avatarSize.width),
+			avatarImage.heightAnchor.constraint(equalToConstant: ReviewCellLayout.avatarSize.height)
+		])
+
 	}
 
 	func setupUsernameLabel() {
 		contentView.addSubview(usernameLabel)
 		usernameLabel.translatesAutoresizingMaskIntoConstraints = false
+
+		NSLayoutConstraint.activate([
+			usernameLabel.leadingAnchor.constraint(equalTo: avatarImage.trailingAnchor, constant: ReviewCellLayout.avatarToUsernameSpacing),
+			usernameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ReviewCellLayout.insets.top),
+			usernameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ReviewCellLayout.insets.right)
+		])
+
+	}
+
+	func setupRatingImage() {
+		contentView.addSubview(ratingImage)
+		ratingImage.translatesAutoresizingMaskIntoConstraints = false
+
+		NSLayoutConstraint.activate([
+			ratingImage.leadingAnchor.constraint(equalTo: avatarImage.trailingAnchor, constant: ReviewCellLayout.avatarToUsernameSpacing),
+			ratingImage.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: ReviewCellLayout.usernameToRatingSpacing),
+			ratingImage.widthAnchor.constraint(equalToConstant: ReviewCellLayout.ratingImageSize.width),
+			ratingImage.heightAnchor.constraint(equalToConstant: ReviewCellLayout.ratingImageSize.height)
+		])
+
 	}
 
     func setupReviewTextLabel() {
         contentView.addSubview(reviewTextLabel)
 		reviewTextLabel.translatesAutoresizingMaskIntoConstraints = false
         reviewTextLabel.lineBreakMode = .byWordWrapping
+
+		NSLayoutConstraint.activate([
+			reviewTextLabel.leadingAnchor.constraint(equalTo: avatarImage.trailingAnchor, constant: ReviewCellLayout.avatarToUsernameSpacing),
+			reviewTextLabel.topAnchor.constraint(equalTo: ratingImage.bottomAnchor, constant: ReviewCellLayout.ratingToTextSpacing),
+			reviewTextLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ReviewCellLayout.insets.right)
+		])
+
     }
+
+	func setupShowMoreButton() {
+		contentView.addSubview(showMoreButton)
+		showMoreButton.translatesAutoresizingMaskIntoConstraints = false
+		showMoreButton.contentVerticalAlignment = .fill
+		showMoreButton.setAttributedTitle(ReviewCellLayout.showMoreText, for: .normal)
+		showMoreButton.isHidden = true
+
+		var config = UIButton.Configuration.plain()
+		config.contentInsets = .zero
+		config.titlePadding = 0
+		showMoreButton.configuration = config
+
+		NSLayoutConstraint.activate([
+			showMoreButton.leadingAnchor.constraint(equalTo: reviewTextLabel.leadingAnchor),
+			showMoreButton.topAnchor.constraint(equalTo: reviewTextLabel.bottomAnchor, constant: ReviewCellLayout.reviewTextToCreatedSpacing)
+
+		])
+
+	}
 
     func setupCreatedLabel() {
         contentView.addSubview(createdLabel)
 		createdLabel.translatesAutoresizingMaskIntoConstraints = false
-    }
 
-    func setupShowMoreButton() {
-        contentView.addSubview(showMoreButton)
-		showMoreButton.translatesAutoresizingMaskIntoConstraints = false
-        showMoreButton.contentVerticalAlignment = .fill
-        showMoreButton.setAttributedTitle(Config.showMoreText, for: .normal)
+		createdLabelTopToShowMoreConstraint = createdLabel.topAnchor.constraint(
+			equalTo: showMoreButton.bottomAnchor,
+			constant: ReviewCellLayout.showMoreToCreatedSpacing
+		)
+
+		createdLabelTopToReviewTextConstraint = createdLabel.topAnchor.constraint(
+			equalTo: reviewTextLabel.bottomAnchor,
+			constant: ReviewCellLayout.reviewTextToCreatedSpacing
+		)
+
+		createdLabelTopToReviewTextConstraint.isActive = true
+
+		NSLayoutConstraint.activate([
+			createdLabel.leadingAnchor.constraint(equalTo: reviewTextLabel.leadingAnchor),
+			createdLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ReviewCellLayout.insets.right),
+			createdLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -ReviewCellLayout.insets.bottom)
+		])
     }
 
 }
