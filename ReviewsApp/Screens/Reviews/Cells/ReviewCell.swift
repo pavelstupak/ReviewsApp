@@ -18,6 +18,8 @@ struct ReviewCellConfig {
     var maxLines = 3
     /// Время создания отзыва.
     let created: NSAttributedString
+	/// URL изображения аватара пользователя.
+	let avatarURL: URL?
     /// Замыкание, вызываемое при нажатии на кнопку "Показать полностью...".
     let onTapShowMore: (UUID) -> Void
 
@@ -26,6 +28,7 @@ struct ReviewCellConfig {
 		rating: Int,
 		reviewText: NSAttributedString,
 		created: NSAttributedString,
+		avatarURL: URL?,
 		maxLines: Int = 3,
 		onTapShowMore: @escaping (UUID) -> Void
 	) {
@@ -33,6 +36,7 @@ struct ReviewCellConfig {
 		self.rating = rating
 		self.reviewText = reviewText
 		self.created = created
+		self.avatarURL = avatarURL
 		self.maxLines = maxLines
 		self.onTapShowMore = onTapShowMore
 	}
@@ -65,6 +69,26 @@ extension ReviewCellConfig: TableCellConfig {
 		cell.showMoreButton.addAction(UIAction { _ in
 			self.onTapShowMore(self.id)
 		}, for: .touchUpInside)
+
+		if let url = avatarURL {
+			let task = URLSession.shared.dataTask(with: url) { data, response, error in
+				guard
+					let data = data,
+					let image = UIImage(data: data),
+					error == nil
+				else {
+					return
+				}
+
+				DispatchQueue.main.async {
+					// Проверяем, что cell всё ещё отображает этот config
+					if cell.config?.id == self.id {
+						cell.avatarImage.image = image
+					}
+				}
+			}
+			task.resume()
+		}
 
     }
 
