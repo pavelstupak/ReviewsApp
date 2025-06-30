@@ -57,7 +57,15 @@ extension ReviewCellConfig: TableCellConfig {
 		cell.currentLayout = layout
 
 		cell.ratingImage.image = RatingRenderer.shared.ratingImage(rating)
+
+		cell.reviewTextLabel.numberOfLines = maxLines
+		cell.showMoreButton.isHidden = !layout.showShowMoreButton
 		cell.config = self
+
+		cell.showMoreButton.addAction(UIAction { _ in
+			self.onTapShowMore(self.id)
+		}, for: .touchUpInside)
+
     }
 
     /// Метод, возвращаюший высоту ячейки с данным ограничением по размеру.
@@ -172,6 +180,8 @@ private final class ReviewCellLayout {
 
 	// Высота ячейки.
 	private(set) var height: CGFloat = 0
+	// Флаг необходимости отображения кнопки "Показать полностью...".
+	private(set) var showShowMoreButton: Bool = false
 
     // MARK: - Размеры
 
@@ -226,7 +236,6 @@ private final class ReviewCellLayout {
     func height(config: Config, maxWidth: CGFloat) -> CGFloat {
 		var maxX = insets.left
         var maxY = insets.top
-        var showShowMoreButton = false
 
 		avatarImageFrame = CGRect(
 			origin: CGPoint(x: maxX, y: maxY),
