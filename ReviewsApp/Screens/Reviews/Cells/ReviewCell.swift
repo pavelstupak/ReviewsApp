@@ -239,7 +239,8 @@ private final class ReviewCellLayout {
     // MARK: - Размеры
 
     fileprivate static let avatarSize = CGSize(width: 36.0, height: 36.0)
-	fileprivate static let ratingImageSize = CGSize(width: 84.0, height: 16.0)
+	fileprivate static let ratingImageSize = RatingRenderer.shared.imageSize
+
     fileprivate static let avatarCornerRadius = 18.0
     fileprivate static let photoCornerRadius = 8.0
 

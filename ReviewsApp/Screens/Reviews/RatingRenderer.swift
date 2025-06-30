@@ -43,6 +43,13 @@ final class RatingRenderer {
     private let imageRenderer: UIGraphicsImageRenderer
 	private var didLogInvalidRating = false
 
+	var imageSize: CGSize {
+		return CGSize(
+			width: (config.starImage.size.width + config.spacing) * CGFloat(config.ratingRange.upperBound) - config.spacing,
+			height: config.starImage.size.height
+		)
+	}
+
     init(
         config: RatingRendererConfig,
         images: [Int: UIImage],
