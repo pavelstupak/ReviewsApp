@@ -23,10 +23,6 @@ final class ReviewsViewController: UIViewController {
         super.viewDidLoad()
         setupViewModel()
         viewModel.getReviews()
-
-		reviewsView.tableView.rowHeight = UITableView.automaticDimension
-		// Примерная высота для ячейки с отзывом из 1 строки
-		reviewsView.tableView.estimatedRowHeight = 100
     }
 
 }
