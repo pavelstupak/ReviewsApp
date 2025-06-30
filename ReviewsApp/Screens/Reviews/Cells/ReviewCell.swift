@@ -71,23 +71,38 @@ extension ReviewCellConfig: TableCellConfig {
 		}, for: .touchUpInside)
 
 		if let url = avatarURL {
-			let task = URLSession.shared.dataTask(with: url) { data, response, error in
-				guard
-					let data = data,
-					let image = UIImage(data: data),
-					error == nil
-				else {
-					return
-				}
+			let request = URLRequest(url: url)
 
-				DispatchQueue.main.async {
-					// Проверяем, что cell всё ещё отображает этот config
-					if cell.config?.id == self.id {
-						cell.avatarImage.image = image
+			// Проверка кэша перед загрузкой
+			if let cachedResponse = URLCache.shared.cachedResponse(for: request),
+			   let image = UIImage(data: cachedResponse.data) {
+				// Если картинка есть в кэше, то используем её
+				cell.avatarImage.image = image
+			} else {
+				// Картинки нет в кэше, то загружаем её
+				let task = URLSession.shared.dataTask(with: request) { data, response, error in
+					guard
+						let data = data,
+						let response = response,
+						let image = UIImage(data: data),
+						error == nil
+					else {
+						return
+					}
+
+					// Сохраняем в кэш
+					let cachedData = CachedURLResponse(response: response, data: data)
+					URLCache.shared.storeCachedResponse(cachedData, for: request)
+
+					DispatchQueue.main.async {
+						// Проверяем, что cell всё ещё показывает этот config
+						if cell.config?.id == self.id {
+							cell.avatarImage.image = image
+						}
 					}
 				}
+				task.resume()
 			}
-			task.resume()
 		}
 
     }
