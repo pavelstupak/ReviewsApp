@@ -8,9 +8,6 @@ final class ReviewsViewController: UIViewController {
     init(viewModel: ReviewsViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-		viewModel.onTapShowMore = { [weak self] id in
-			self?.expandReview(with: id)
-		}
     }
 
     required init?(coder: NSCoder) {
@@ -31,15 +28,6 @@ final class ReviewsViewController: UIViewController {
 		// Примерная высота для ячейки с отзывом из 1 строки
 		reviewsView.tableView.estimatedRowHeight = 100
     }
-
-	func expandReview(with id: UUID) {
-		if let index = viewModel.showMoreReview(with: id) {
-			let indexPath = IndexPath(row: index, section: 0)
-			UIView.performWithoutAnimation {
-				reviewsView.tableView.reloadRows(at: [indexPath], with: .none)
-			}
-		}
-	}
 
 }
 
