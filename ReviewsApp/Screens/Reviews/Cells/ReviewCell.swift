@@ -18,6 +18,8 @@ struct ReviewCellConfig {
     var maxLines = 3
     /// Время создания отзыва.
     let created: NSAttributedString
+	/// URL изображения аватара пользователя.
+	let avatarURL: URL?
     /// Замыкание, вызываемое при нажатии на кнопку "Показать полностью...".
     let onTapShowMore: (UUID) -> Void
 
@@ -26,6 +28,7 @@ struct ReviewCellConfig {
 		rating: Int,
 		reviewText: NSAttributedString,
 		created: NSAttributedString,
+		avatarURL: URL?,
 		maxLines: Int = 3,
 		onTapShowMore: @escaping (UUID) -> Void
 	) {
@@ -33,6 +36,7 @@ struct ReviewCellConfig {
 		self.rating = rating
 		self.reviewText = reviewText
 		self.created = created
+		self.avatarURL = avatarURL
 		self.maxLines = maxLines
 		self.onTapShowMore = onTapShowMore
 	}
@@ -66,6 +70,43 @@ extension ReviewCellConfig: TableCellConfig {
 			self.onTapShowMore(self.id)
 		}, for: .touchUpInside)
 
+		if let url = avatarURL {
+			let request = URLRequest(url: url)
+
+			// Проверка кэша перед загрузкой
+			if let cachedResponse = URLCache.shared.cachedResponse(for: request),
+			   let image = UIImage(data: cachedResponse.data) {
+				// Если картинка есть в кэше, то используем её
+				cell.avatarImage.image = image
+			} else {
+				// Картинки нет в кэше, то загружаем её
+				let task = URLSession.shared.dataTask(with: request) { data, response, error in
+					guard
+						let data = data,
+						let response = response,
+						let image = UIImage(data: data),
+						error == nil
+					else {
+						return
+					}
+
+					// Сохраняем в кэш
+					let cachedData = CachedURLResponse(response: response, data: data)
+					URLCache.shared.storeCachedResponse(cachedData, for: request)
+
+					DispatchQueue.main.async {
+						// Проверяем, что cell всё ещё показывает этот config
+						if cell.config?.id == self.id {
+							cell.avatarImage.image = image
+						}
+						cell.avatarLoadTask = nil
+					}
+				}
+				cell.avatarLoadTask = task
+				task.resume()
+			}
+		}
+
     }
 
     /// Метод, возвращаюший высоту ячейки с данным ограничением по размеру.
@@ -96,6 +137,7 @@ final class ReviewCell: UITableViewCell {
 
     fileprivate var config: Config?
 	fileprivate var currentLayout: ReviewCellLayout?
+	fileprivate var avatarLoadTask: URLSessionDataTask?
 
 	fileprivate let avatarImage = UIImageView()
 	fileprivate let usernameLabel = UILabel()
@@ -123,6 +165,17 @@ final class ReviewCell: UITableViewCell {
         createdLabel.frame = layout.createdLabelFrame
         showMoreButton.frame = layout.showMoreButtonFrame
     }
+
+	override func prepareForReuse() {
+		super.prepareForReuse()
+
+		// Отменяем текущую загрузку
+		avatarLoadTask?.cancel()
+		avatarLoadTask = nil
+
+		// Сбрасываем картинку на плейсхолдер
+		avatarImage.image = Self.avatarPlaceholder
+	}
 
 }
 

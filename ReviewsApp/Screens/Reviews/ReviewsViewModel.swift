@@ -101,6 +101,7 @@ private extension ReviewsViewModel {
 			rating: review.rating,
             reviewText: reviewText,
             created: created,
+			avatarURL: URL(string: review.avatarUrl ?? ""),
 			onTapShowMore: { [weak self] id in
 				self?.showMoreReview(with: id)
 			}
