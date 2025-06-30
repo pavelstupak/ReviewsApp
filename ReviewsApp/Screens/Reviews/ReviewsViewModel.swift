@@ -4,7 +4,9 @@ import UIKit
 final class ReviewsViewModel: NSObject {
 
     /// Замыкание, вызываемое при изменении `state`.
-    var onStateChange: ((State) -> Void)?
+    var onItemsChanged: ((State) -> Void)?
+	/// Замыкание, вызываемое при изменении `review`.
+	var onReviewUpdated: ((IndexPath) -> Void)?
 
     private var state: State
     private let reviewsProvider: ReviewsProvider
@@ -60,12 +62,12 @@ private extension ReviewsViewModel {
 					if self.state.offset >= reviews.count {
 						self.state.items.append(self.makeReviewsCountItem(totalCount: reviews.count))
 					}
-					self.onStateChange?(self.state)
+					self.onItemsChanged?(self.state)
 				}
 			} catch {
 				DispatchQueue.main.async {
 					self.state.shouldLoad = true
-					self.onStateChange?(self.state)
+					self.onItemsChanged?(self.state)
 				}
 			}
 		}
@@ -80,7 +82,9 @@ private extension ReviewsViewModel {
         else { return }
         item.maxLines = .zero
         state.items[index] = item
-        onStateChange?(state)
+		
+		let indexPath = IndexPath(row: index, section: 0)
+		onReviewUpdated?(indexPath)
     }
 
 }
