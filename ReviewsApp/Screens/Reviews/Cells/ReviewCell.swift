@@ -102,6 +102,12 @@ final class ReviewCell: UITableViewCell {
         setupCell()
     }
 
+	/// Метод, обрабатывающий нажатие на кнопку "Показать полностью...".
+	@objc private func showMoreTapped() {
+		guard let config = config else { return }
+		config.onTapShowMore(config.id)
+	}
+
 }
 
 // MARK: - Private
@@ -189,6 +195,8 @@ private extension ReviewCell {
 			showMoreButton.topAnchor.constraint(equalTo: reviewTextLabel.bottomAnchor, constant: ReviewCellLayout.reviewTextToCreatedSpacing)
 
 		])
+
+		showMoreButton.addTarget(self, action: #selector(showMoreTapped), for: .touchUpInside)
 
 	}
 

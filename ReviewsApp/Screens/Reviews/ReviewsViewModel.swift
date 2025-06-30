@@ -6,6 +6,9 @@ final class ReviewsViewModel: NSObject {
     /// Замыкание, вызываемое при изменении `state`.
     var onStateChange: ((State) -> Void)?
 
+	/// Замыкание, вызываемое при нажатии на кнопку "Показать полностью...`.
+	var onTapShowMore: ((UUID) -> Void)?
+
     private var state: State
     private let reviewsProvider: ReviewsProvider
     private let ratingRenderer: RatingRenderer
@@ -14,7 +17,7 @@ final class ReviewsViewModel: NSObject {
 	init(
 		state: State = State(),
 		reviewsProvider: ReviewsProvider = ReviewsProvider(),
-		decoder: JSONDecoder = JSONDecoder()
+		decoder: JSONDecoder = JSONDecoder(),
 	) {
 		self.state = state
 		self.reviewsProvider = reviewsProvider
@@ -38,13 +41,26 @@ extension ReviewsViewModel {
         reviewsProvider.getReviews(offset: state.offset, completion: gotReviews)
     }
 
+	/// Метод, вызываемый при нажатии на кнопку "Показать полностью...".
+	/// Снимает ограничение на количество строк текста отзыва (раскрывает текст).
+	func showMoreReview(with id: UUID) -> Int? {
+		guard
+			let index = state.items.firstIndex(where: { ($0 as? ReviewItem)?.id == id }),
+			var item = state.items[index] as? ReviewItem
+		else { return nil }
+		item.maxLines = .zero
+		state.items[index] = item
+		onStateChange?(state)
+		return index
+	}
+
 }
 
 // MARK: - Private
 
 private extension ReviewsViewModel {
 
-    /// Метод обработки получения отзывов.
+	/// Метод обработки получения отзывов.
 	func gotReviews(_ result: ReviewsProvider.GetReviewsResult) {
 
 		DispatchQueue.global(qos: .userInitiated).async {
@@ -70,19 +86,6 @@ private extension ReviewsViewModel {
 			}
 		}
 	}
-
-    /// Метод, вызываемый при нажатии на кнопку "Показать полностью...".
-    /// Снимает ограничение на количество строк текста отзыва (раскрывает текст).
-    func showMoreReview(with id: UUID) {
-        guard
-            let index = state.items.firstIndex(where: { ($0 as? ReviewItem)?.id == id }),
-            var item = state.items[index] as? ReviewItem
-        else { return }
-        item.maxLines = .zero
-        state.items[index] = item
-        onStateChange?(state)
-    }
-
 }
 
 // MARK: - Items
@@ -102,7 +105,7 @@ private extension ReviewsViewModel {
             reviewText: reviewText,
             created: created,
 			onTapShowMore: { [weak self] id in
-				self?.showMoreReview(with: id)
+				self?.onTapShowMore?(id)
 			}
 		)
         return item
